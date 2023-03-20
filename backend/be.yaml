@@ -1,0 +1,145 @@
+swagger: "2.0"
+info:
+  title: Test iam
+  description: Title
+  version: 1.0.0
+schemes:
+  - http
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+basePath: /api/v1
+paths:
+  /health:
+    get:
+      summary: Healthcheck endpoint
+      tags:
+        - System
+      operationId: GetHealth
+      responses:
+        200:
+          description: Success
+        default:
+          description: Unexpected error.
+          schema:
+            $ref: "#/definitions/Error"
+  /login:
+    post:
+      description: Login
+      tags:
+        - Auth
+      operationId: Login
+      consumes:
+        - "application/json"
+      parameters:
+        - name: 'login'
+          in: 'body'
+          required: true
+          description: 'Login Payload'
+          schema:
+            $ref: '#/definitions/LoginInfo'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/TokenPair"
+        default:
+          description: Unexpected error.
+          schema:
+            $ref: "#/definitions/Error"
+  /refresh:
+    post:
+      description: Refresh token
+      tags:
+        - Auth
+      operationId: Refresh
+      consumes:
+        - "application/json"
+      parameters:
+        - name: 'refresh'
+          in: 'body'
+          required: true
+          description: 'Refresh Payload'
+          schema:
+            $ref: '#/definitions/RefreshToken'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/TokenPair"
+        default:
+          description: Unexpected error.
+          schema:
+            $ref: "#/definitions/Error"
+
+  /user/me/roles:
+    get:
+      description: Get user roles
+      tags:
+        - User
+      operationId: GetUserRoles
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Success
+          schema:
+            type: array
+            items:
+              type: string
+        default:
+          description: Unexpected error.
+          schema:
+            $ref: "#/definitions/Error"
+definitions:
+  Brand:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Brand ID
+      name:
+        type: string
+        description: Brand name
+  BrandOffers:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Brand ID
+
+  LoginInfo:
+    type: object
+    properties:
+      username:
+        type: string
+        description: Username
+        example: test
+      password:
+        type: string
+        description: Password
+        example: 1234
+  TokenPair:
+    type: object
+    properties:
+      AccessToken:
+        $ref: "#/definitions/AccessToken"
+      RefreshToken:
+        $ref: "#/definitions/RefreshToken"
+  AccessToken:
+    type: string
+  RefreshToken:
+    type: string
+
+  Error:
+    type: object
+    properties:
+      message:
+        type: string
+        description: Error message
+      code:
+        type: integer
+        format: int32
+        description: Error code

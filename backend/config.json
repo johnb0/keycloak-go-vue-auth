@@ -1,0 +1,13 @@
+{
+  "Keycloak": {
+    "Url": "http://keycloak:8080",
+    "Realm": "test",
+    "AdminUser": "admin",
+    "AdminPassword": "Pa55w0rd",
+    "ClientName": "test"
+  },
+  "Server": {
+    "Host": "",
+    "Port": 8080
+  }
+}
