@@ -1,0 +1,10 @@
+.git
+.gitignore
+.github
+.husky
+Docker
+README.md
+.env
+node_modules
+dist
+coverage
