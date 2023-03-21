@@ -33,9 +33,23 @@ func main() {
 
 	// keycloak
 	client := gocloak.NewClient(conf.Keycloak.Url)
-	id, secret, err := realm.GetRealmClientCred(ctx, client, conf.Keycloak)
+	keyCloakService := realm.NewKeycloakSetup(ctx, client, conf.Keycloak)
+	id, secret, err := keyCloakService.SetupRealmWithClient()
 	if err != nil {
 		log.Fatalf("Error getting realm client credentials: %s", err)
+	}
+	// TODO: move this to setup
+	access, err := keyCloakService.GetMasterRealmToken()
+	if err != nil {
+		log.Fatalf("Error getting master realm token: %s", err)
+	}
+	userID, err := keyCloakService.CreateUserIfNeeded(access.AccessToken, conf.Keycloak.AdminUser, conf.Keycloak.AdminPassword)
+	if err != nil {
+		log.Fatalf("Error creating user: %s", err)
+	}
+	err = keyCloakService.AddAdminRightsToUser(userID)
+	if err != nil {
+		log.Fatalf("Error adding admin rights to user: %s", err)
 	}
 
 	m := middleware.NewKeycloakAuth(client, id, secret, conf.Keycloak)

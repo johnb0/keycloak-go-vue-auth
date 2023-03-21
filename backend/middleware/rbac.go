@@ -13,7 +13,7 @@ func (a *KeycloakAuth) Authorize(r *http.Request, auth interface{}) error {
 		return errors.New(http.StatusForbidden, "invalid token")
 	}
 	if len(roles) <= 1 {
-		return errors.New(http.StatusForbidden, "user has no roles")
+		return errors.New(http.StatusForbidden, "user has only one realm role")
 	}
 	return nil
 }
