@@ -35,16 +35,16 @@ func GetAppConfig(additionalDirectories ...string) (*AppConfig, error) {
 	}
 
 	if err := viper.ReadInConfig(); err != nil {
-		return nil, fmt.Errorf("failed to read in config: %w", err)
+		return nil, fmt.Errorf("reading in config: %w", err)
 	}
 
 	conf := &AppConfig{}
 	if err := viper.Unmarshal(conf); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal config into struct: %w", err)
+		return nil, fmt.Errorf("unmarshaling config into struct: %w", err)
 	}
 
 	if err := validator.New().Struct(conf); err != nil {
-		return nil, fmt.Errorf("failed to validate config: %w", err)
+		return nil, fmt.Errorf("validating config: %w", err)
 	}
 
 	return conf, nil

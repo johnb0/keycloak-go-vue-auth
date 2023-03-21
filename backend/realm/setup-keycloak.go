@@ -49,15 +49,15 @@ func NewKeycloakSetup(ctx context.Context, client *gocloak.GoCloak, conf config.
 func (k *KeycloakSetupService) SetupRealmWithClient() (string, string, error) {
 	access, err := k.GetMasterRealmToken()
 	if err != nil {
-		return "", "", fmt.Errorf("failed to get master realm token: %w", err)
+		return "", "", fmt.Errorf("getting master realm token: %w", err)
 	}
 	err = k.setupNewRealm(access.AccessToken)
 	if err != nil {
-		return "", "", fmt.Errorf("failed to setup new realm: %w", err)
+		return "", "", fmt.Errorf("getting setup new realm: %w", err)
 	}
 	client, err := k.setupNewRealmClient(access.AccessToken)
 	if err != nil {
-		return "", "", fmt.Errorf("failed to setup new realm client: %w", err)
+		return "", "", fmt.Errorf("preparing new realm client: %w", err)
 	}
 	if client == nil || client.ClientID == nil || client.Secret == nil {
 		return "", "", fmt.Errorf("client doesn't have clientID or secret")
@@ -77,7 +77,7 @@ func (k *KeycloakSetupService) setupNewRealm(token string) error {
 			return fmt.Errorf("unknown err: %w", err)
 		}
 		if apiErr.Code != http.StatusNotFound {
-			return fmt.Errorf("failed to get realm: %w", err)
+			return fmt.Errorf("getting realm: %w", err)
 		}
 		return k.createRealm(token)
 	}
@@ -92,7 +92,7 @@ func (k *KeycloakSetupService) createRealm(token string) error {
 	}
 	_, err := k.client.CreateRealm(k.ctx, token, newRealm)
 	if err != nil {
-		return fmt.Errorf("failed to create realm: %w", err)
+		return fmt.Errorf("creating realm: %w", err)
 	}
 	return nil
 }
@@ -107,7 +107,7 @@ func (k *KeycloakSetupService) setupNewRealmClient(token string) (*gocloak.Clien
 			return nil, fmt.Errorf("unknown err: %w", err)
 		}
 		if apiErr.Code != http.StatusNotFound {
-			return nil, fmt.Errorf("failed to get client: %w", err)
+			return nil, fmt.Errorf("getting client: %w", err)
 		}
 	}
 	if len(keycloakClients) == 0 {
@@ -125,7 +125,7 @@ func (k *KeycloakSetupService) createClient(token string) (*gocloak.Client, erro
 	}
 	id, err := k.client.CreateClient(k.ctx, token, k.conf.Realm, newClient)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create realm client: %w", err)
+		return nil, fmt.Errorf("creating realm client: %w", err)
 	}
 
 	c, err := k.client.GetClient(k.ctx, token, k.conf.Realm, id)
@@ -168,13 +168,13 @@ func (k *KeycloakSetupService) CreateUserIfNeeded(token, username, password stri
 func (k *KeycloakSetupService) AddAdminRightsToUser(userId string) error {
 	access, err := k.GetMasterRealmToken()
 	if err != nil {
-		return fmt.Errorf("failed to get master realm token: %w", err)
+		return fmt.Errorf("getting master realm token: %w", err)
 	}
 	clients, err := k.client.GetClients(k.ctx, access.AccessToken, k.conf.Realm, gocloak.GetClientsParams{
 		ClientID: pointers.ToPtr(realmManagerClient),
 	})
 	if err != nil {
-		return fmt.Errorf("failed to get realm manager client: %w", err)
+		return fmt.Errorf("getting realm manager client: %w", err)
 	}
 	if len(clients) == 0 {
 		return fmt.Errorf("realm manager client not found")
@@ -182,11 +182,11 @@ func (k *KeycloakSetupService) AddAdminRightsToUser(userId string) error {
 	client := clients[0]
 	role, err := k.client.GetClientRole(k.ctx, access.AccessToken, k.conf.Realm, *client.ID, realmAdminRole)
 	if err != nil {
-		return fmt.Errorf("failed to get realm admin role: %w", err)
+		return fmt.Errorf("getting realm admin role: %w", err)
 	}
 	err = k.client.AddClientRolesToUser(k.ctx, access.AccessToken, k.conf.Realm, *client.ID, userId, []gocloak.Role{*role})
 	if err != nil {
-		return fmt.Errorf("failed to add realm admin role to user: %w", err)
+		return fmt.Errorf("adding realm admin role to user: %w", err)
 	}
 	return nil
 }
