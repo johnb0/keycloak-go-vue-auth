@@ -2,6 +2,11 @@
 
 ## Pre-requisites
 - Install Docker
+- Run to generate API from Swagger
+```bash
+make -C ./backend generateAPI 
+``` 
+
 
 ## Run 
 - Run `docker compose up`

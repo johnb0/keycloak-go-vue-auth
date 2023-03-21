@@ -94,22 +94,6 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 definitions:
-  Brand:
-    type: object
-    properties:
-      id:
-        type: string
-        description: Brand ID
-      name:
-        type: string
-        description: Brand name
-  BrandOffers:
-    type: object
-    properties:
-      id:
-        type: string
-        description: Brand ID
-
   LoginInfo:
     type: object
     properties:

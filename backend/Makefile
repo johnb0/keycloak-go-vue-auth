@@ -1,5 +1,5 @@
 generateAPI:
 	swagger generate server -f ./be.yaml -s ./generated/swagger/restapi -m ./generated/swagger/models --exclude-main
 
-build: generateAPI
+build:
 	go build -o be ./main.go

@@ -62,6 +62,7 @@ func main() {
 	auth := handlers.NewKeycloakAuth(client, id, secret, conf.Keycloak.Realm)
 	api.AuthLoginHandler = auth.Login()
 	api.AuthRefreshHandler = auth.Refresh()
+	api.SystemGetHealthHandler = handlers.Health()
 
 	api.Init()
 	server := restapi.NewServer(api)
