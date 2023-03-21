@@ -11,6 +11,8 @@ import (
 	"test_iam/config"
 )
 
+const subClaim = "sub"
+
 type KeycloakAuth struct {
 	client       *gocloak.GoCloak
 	clientID     string
@@ -31,8 +33,6 @@ func NewKeycloakAuth(client *gocloak.GoCloak, clientID, clientSecret string, con
 	}
 }
 
-// todo: simplify
-
 func (a *KeycloakAuth) ParseToken(token string) (interface{}, error) {
 	ctx := context.Background()
 	i, err := a.client.RetrospectToken(ctx, token, a.clientID, a.clientSecret, a.realmName)
@@ -52,11 +52,11 @@ func (a *KeycloakAuth) ParseToken(token string) (interface{}, error) {
 func (a *KeycloakAuth) GetUserRoles(claims *jwt.MapClaims) ([]gocloak.Role, error) {
 	ctx := context.Background()
 	m := map[string]interface{}(*claims)
-	userID, ok := m["sub"].(string)
+	userID, ok := m[subClaim].(string)
 	if !ok {
 		return nil, errors.New(http.StatusUnauthorized, "invalid token")
 	}
-	t, err := a.client.LoginAdmin(ctx, a.adminUser, a.adminPass, a.realmName) // todo: fix it
+	t, err := a.client.LoginAdmin(ctx, a.adminUser, a.adminPass, a.realmName)
 	if err != nil {
 		return nil, errors.New(http.StatusUnauthorized, err.Error())
 	}
